@@ -4,6 +4,9 @@ services:
   watchtower:
     image: containrrr/watchtower:latest
     container_name: watchtower
+    networks:
+      - watchtower
+    restart: unless-stopped
     env_file: .env
     environment:
       - WATCHTOWER_CLEANUP=true
@@ -11,12 +14,9 @@ services:
       - WATCHTOWER_INCLUDE_RESTARTING=true
       - WATCHTOWER_POLL_INTERVAL=3600
       - WATCHTOWER_WARN_ON_HEAD_FAILURE=never
-      - WATCHTOWER_NOTIFICATION_URL=gotify://gotify.${DOMAIN_NAME}:443/${GOTIFY_TOKEN}/?priority=${GOTIFY_PRIORITY}
+      - WATCHTOWER_NOTIFICATION_URL=ntfy://${NTFY_USER?error}:${NTFY_PASS?error}@ntfy.${DOMAIN_NAME?error}/${NTFY_TOPIC?error}
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
-    networks:
-      - watchtower
-    restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/localtime:/etc/localtime:ro
